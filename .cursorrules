@@ -1,41 +1,87 @@
-Project: f - Command Launcher
-Description: A command launcher tool that helps developers run npm scripts and make targets without remembering exact command names.
+# f - Command Launcher Instructions
 
-Technical Stack:
-- Language: Go
-- Key Dependencies:
-  - github.com/spf13/cobra for CLI
-  - github.com/tidwall/gjson for JSON parsing
-  - External dependency on fzf command for fuzzy finding
+## Project Overview
+This is a command launcher tool written in Go that helps developers run npm scripts and make targets without remembering exact command names. It uses fzf for fuzzy finding and supports multiple build tools through a plugin system.
 
-Project Structure:
-/cmd             - Command-line interface
-/internal
-  /config        - Configuration handling
-  /runner        - Command runner interface and types
-  /ui           - User interface (fzf integration)
-/plugins         - Command runners for different build tools
-  /npm          - NPM scripts handler
-  /make         - Makefile handler
+## Code Style and Conventions
 
-Configuration:
-- Global: ~/.config/f/config.json
-- Project-specific: .f/config.json
-- Supports comments in JSON configuration files
+### General
+- Follow standard Go conventions and idioms
+- Use meaningful variable and function names
+- Add comments for complex logic
+- Keep functions focused and small
+- Error handling should use Go's standard `error` type with meaningful messages
 
-Design Principles:
-1. Plugin-based architecture for easy extension
-2. Simple and intuitive interface
-3. Minimal dependencies
-4. Configuration precedence: project > global > defaults
+### File Structure
+```
+/cmd             - CLI implementation
+/internal        - Internal packages
+/plugins         - Build tool plugins
+```
 
-Code Style:
-- Follow standard Go conventions
-- Use descriptive variable names
-- Add comments for non-obvious logic
-- Error handling should be explicit and informative
+### Plugin Development Guidelines
+- Each plugin must implement the `CommandRunner` interface
+- Plugins should be self-contained
+- Error messages should be user-friendly
+- Handle edge cases gracefully
 
-Future Extensions:
-- Support for Laravel
-- Support for Ruby on Rails
-- Support for other build tools via plugins
+## Configuration
+The tool supports two levels of configuration:
+1. Global: `~/.config/f/config.json`
+2. Project: `.f/config.json`
+
+Configuration files support comments and use JSON format.
+
+## Best Practices
+
+### Error Handling
+```go
+// Preferred
+if err != nil {
+    return fmt.Errorf("failed to read config: %w", err)
+}
+
+// Avoid
+if err != nil {
+    return err
+}
+```
+
+### Command Execution
+- Always handle STDIN/STDOUT/STDERR properly
+- Use `os/exec` package for running commands
+- Preserve terminal settings for interactive commands
+
+### Plugin Interface
+```go
+type CommandRunner interface {
+    ParseCommands(path string) ([]Command, error)
+    RunCommand(cmd Command) error
+}
+```
+
+## Testing
+- Write unit tests for core functionality
+- Use table-driven tests where appropriate
+- Mock external commands in tests
+- Test error conditions explicitly
+
+## Documentation
+- Keep comments up to date
+- Document public APIs
+- Include examples in documentation
+- Update README.md when adding features
+
+## Dependencies
+- Minimize external dependencies
+- Use standard library when possible
+- Required external tools (fzf) should be documented
+
+## Security Considerations
+- Don't execute arbitrary commands
+- Validate all user input
+- Handle file permissions correctly
+- Follow principle of least privilege
+
+# Copilot(Generative AI) Instructions
+When generating code, do not omit anything and generate everything.

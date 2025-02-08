@@ -82,3 +82,6 @@ type CommandRunner interface {
 - Validate all user input
 - Handle file permissions correctly
 - Follow principle of least privilege
+
+# Copilot(Generative AI) Instructions
+When generating code, do not omit anything and generate everything.
