@@ -1,0 +1,41 @@
+Project: f - Command Launcher
+Description: A command launcher tool that helps developers run npm scripts and make targets without remembering exact command names.
+
+Technical Stack:
+- Language: Go
+- Key Dependencies:
+  - github.com/spf13/cobra for CLI
+  - github.com/tidwall/gjson for JSON parsing
+  - External dependency on fzf command for fuzzy finding
+
+Project Structure:
+/cmd             - Command-line interface
+/internal
+  /config        - Configuration handling
+  /runner        - Command runner interface and types
+  /ui           - User interface (fzf integration)
+/plugins         - Command runners for different build tools
+  /npm          - NPM scripts handler
+  /make         - Makefile handler
+
+Configuration:
+- Global: ~/.config/f/config.json
+- Project-specific: .f/config.json
+- Supports comments in JSON configuration files
+
+Design Principles:
+1. Plugin-based architecture for easy extension
+2. Simple and intuitive interface
+3. Minimal dependencies
+4. Configuration precedence: project > global > defaults
+
+Code Style:
+- Follow standard Go conventions
+- Use descriptive variable names
+- Add comments for non-obvious logic
+- Error handling should be explicit and informative
+
+Future Extensions:
+- Support for Laravel
+- Support for Ruby on Rails
+- Support for other build tools via plugins

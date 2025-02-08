@@ -1,41 +1,32 @@
 # fastrun
 
-A command launcher tool that helps you run npm scripts and make targets without remembering exact command names.
-
-## Features
-
-- Fuzzy finding for commands using fzf
-- Support for npm scripts and Makefile targets
-- Configurable through global and project-specific settings
-- Extensible plugin system
+A command launcher tool that helps developers run npm scripts and make targets without remembering exact command names.
 
 ## Installation
 
+Using Homebrew:
+
 ```bash
-# macOS
+brew tap yourusername/fastrun
 brew install fastrun
-
-# Windows
-winget install fastrun
-
-# Linux
-apt-get install fastrun
 ```
+
+This will install the `f` command to your system.
 
 ## Usage
 
-Simply run `fastrun` in a directory containing a `package.json` or `Makefile`:
-
+Basic usage:
 ```bash
-fastrun
+f               # Interactive mode with fzf
+f --help        # Show help
+f --version     # Show version
 ```
 
 ## Configuration
 
-Global configuration: `~/.config/fastrun/config.json`
-Project configuration: `.fastrun/config.json`
+- Global config: `~/.config/f/config.json`
+- Project config: `.f/config.json`
 
 ## License
 
-MIT
-
+MIT License
