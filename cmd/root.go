@@ -1,0 +1,80 @@
+package cmd
+
+import (
+    "fmt"
+    "os"
+
+    "github.com/spf13/cobra"
+    "github.com/kato/fastrun/internal/config"
+    "github.com/kato/fastrun/internal/runner"
+    "github.com/kato/fastrun/internal/ui"
+    "github.com/kato/fastrun/plugins/npm"
+    "github.com/kato/fastrun/plugins/make"
+)
+
+var rootCmd = &cobra.Command{
+    Use:   "fastrun",
+    Short: "fastrun is a command launcher",
+    Long: `fastrun is a command launcher that helps you run npm scripts and make targets
+without remembering the exact command names.`,
+    RunE: runCommand,
+}
+
+func Execute() error {
+    return rootCmd.Execute()
+}
+
+func runCommand(cmd *cobra.Command, args []string) error {
+    // 設定を読み込む
+    cfg, err := config.LoadConfig()
+    if err != nil {
+        return fmt.Errorf("failed to load config: %w", err)
+    }
+
+    // Get current working directory
+    cwd, err := os.Getwd()
+    if err != nil {
+        return fmt.Errorf("failed to get current directory: %w", err)
+    }
+
+    // Initialize runners
+    runners := []runner.CommandRunner{
+        &npm.Runner{},
+        &make.Runner{},
+    }
+
+    // Collect all available commands
+    var commands []runner.Command
+    for _, r := range runners {
+        cmds, err := r.ParseCommands(cwd)
+        if err == nil {
+            commands = append(commands, cmds...)
+        }
+    }
+
+    if len(commands) == 0 {
+        return fmt.Errorf("no commands found in current directory")
+    }
+
+    // Show UI and get selected command
+    ui := ui.NewUI(commands, cfg)
+    selectedCmd, err := ui.Show()
+    if err != nil {
+        return fmt.Errorf("UI error: %w", err)
+    }
+
+    // Find the appropriate runner
+    for _, r := range runners {
+        cmds, err := r.ParseCommands(cwd)
+        if err != nil {
+            continue
+        }
+        for _, cmd := range cmds {
+            if cmd.Name == selectedCmd.Name {
+                return r.RunCommand(*selectedCmd)
+            }
+        }
+    }
+
+    return fmt.Errorf("runner not found for command: %s", selectedCmd.Name)
+}

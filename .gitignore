@@ -1,0 +1,24 @@
+# バイナリ
+fastrun
+*.exe
+*.dll
+*.so
+*.dylib
+
+# テスト
+*.test
+*.tmp
+
+# 依存関係
+vendor/
+
+# IDE設定
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# ビルド用ディレクトリ
+bin/
+dist/
