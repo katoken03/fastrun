@@ -24,14 +24,12 @@ archives:
         format: zip
 
 brews:
-  - name: fastrun
-    tap:
+  - repository:
       owner: katoken03
       name: homebrew-fastrun
     commit_author:
       name: katoken03
       email: katoakimitsu@gmail.com
-    folder: Formula
     homepage: "https://github.com/katoken03/fastrun"
     description: "Command launcher tool for developers"
     license: "MIT"
