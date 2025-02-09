@@ -1,24 +1,27 @@
-# バイナリ
+# binary
 fastrun
 *.exe
 *.dll
 *.so
 *.dylib
 
-# テスト
+# test
 *.test
 *.tmp
 
-# 依存関係
+# vendor
 vendor/
 
-# IDE設定
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 .DS_Store
 
-# ビルド用ディレクトリ
+# build
 bin/
 dist/
+
+# 
+/.history
