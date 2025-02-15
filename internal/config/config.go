@@ -58,5 +58,11 @@ func loadConfigFile(path string, config *Config) error {
         }
     }
 
+    // command_colorの値を読み込む
+    commandColor := gjson.Get(string(content), "command_color")
+    if commandColor.Exists() {
+        config.CommandColor = commandColor.String()
+    }
+
     return nil
 }

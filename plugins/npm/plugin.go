@@ -39,6 +39,9 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 }
 
 func (r *Runner) RunCommand(cmd runner.Command) error {
+    fullCmd := fmt.Sprintf("npm run %s", cmd.Name)
+    runner.DisplayCommand(fullCmd, "cyan")
+
     c := exec.Command("npm", "run", cmd.Name)
     c.Stdout = os.Stdout
     c.Stderr = os.Stderr
