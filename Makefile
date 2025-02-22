@@ -11,9 +11,7 @@ BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
 
 .PHONY: all build clean test install uninstall
 
-all: clean build
-
-# ビルド
+# ビルド(ファイル名 f でビルドします)
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
@@ -21,6 +19,9 @@ build:
 clean:
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_NAME).test
+
+# クリーンアップ + ビルド
+all: clean build
 
 # テスト実行
 test:

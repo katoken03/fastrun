@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/kato/fastrun/internal/runner"
@@ -39,7 +38,7 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 	defer file.Close()
 
 	var commands []runner.Command
-	commandMap := make(map[string]string) // target -> description
+	seenTargets := make(map[string]bool) // 重複チェック用
 
 	scanner := bufio.NewScanner(file)
 	var currentComment string
@@ -56,28 +55,18 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 		// ターゲット行の処理
 		if idx := strings.Index(line, ":"); idx != -1 {
 			target := strings.TrimSpace(line[:idx])
-			if !shouldIgnoreTarget(target) {
-				commandMap[target] = currentComment
+			// 重複と無視すべきターゲットをスキップ
+			if !shouldIgnoreTarget(target) && !seenTargets[target] {
+				seenTargets[target] = true
+				cmd := runner.Command{
+					Name:           target,
+					Description:    currentComment,
+					ExecuteCommand: fmt.Sprintf("make %s", target),
+				}
+				commands = append(commands, cmd)
 			}
 			currentComment = ""
 		}
-	}
-
-	// ターゲット名を取得してソート
-	var targets []string
-	for target := range commandMap {
-		targets = append(targets, target)
-	}
-	sort.Strings(targets)
-
-	// コマンドを追加
-	for _, target := range targets {
-		cmd := runner.Command{
-			Name:           target,
-			Description:    commandMap[target],
-			ExecuteCommand: fmt.Sprintf("make %s", target),
-		}
-		commands = append(commands, cmd)
 	}
 
 	if err := scanner.Err(); err != nil {
