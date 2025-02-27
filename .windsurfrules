@@ -1,5 +1,14 @@
 # f - Command Launcher Instructions
 
+## Language Settings
+
+### Japanese_required
+- Comments
+- AI chat responses
+
+### English_required
+- Error messages
+
 ## Project Overview
 This is a command launcher tool written in Go that helps developers run npm scripts and make targets without remembering exact command names. It uses fzf for fuzzy finding and supports multiple build tools through a plugin system.
 
@@ -85,3 +94,10 @@ type CommandRunner interface {
 
 # Copilot(Generative AI) Instructions
 When generating code, do not omit anything and generate everything.
+
+# Shortcut Aliases
+/ask: The user is requesting consultation. Provide a proactive response with a multi-faceted analysis. Unless given clear instructions, do not execute any tasks during the consultation.
+/plan: Clearly and thoroughly outline a work plan and confirm there are no discrepancies. Proceed with execution only after reaching an agreement.
+/debug: Identify the root cause of a bug. List 5-7 possible causes and narrow them down to 1-2. Utilize logs to validate hypotheses before applying fixes.
+/cmt: Add appropriate comments and documentation to clarify the intent of the given code. Follow the existing code formatting.
+/log: Consider the appropriate log level and record only necessary information. Design logs to be concise and avoid redundancy. Follow the existing code formatting.
