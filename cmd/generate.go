@@ -41,13 +41,13 @@ func generateShellFunction(cmd *cobra.Command, args []string) error {
 
 	switch shellType {
 	case "bash":
-		shellFunction = bashFunction
+		shellFunction = bashFunctionWithT
 		configFile = "~/.bash_profile"
-		appendCmd = "cat << 'EOF' >> ~/.bash_profile\n" + bashFunction + "\nEOF"
+		appendCmd = "cat << 'EOF' >> ~/.bash_profile\n" + bashFunctionWithT + "\nEOF"
 	case "zsh":
-		shellFunction = zshFunction
+		shellFunction = zshFunctionWithT
 		configFile = "~/.zshrc"
-		appendCmd = "cat << 'EOF' >> ~/.zshrc\n" + zshFunction + "\nEOF"
+		appendCmd = "cat << 'EOF' >> ~/.zshrc\n" + zshFunctionWithT + "\nEOF"
 	default:
 		return fmt.Errorf("unsupported shell type: %s (supported: bash, zsh)", shellType)
 	}
@@ -85,7 +85,8 @@ func detectShell() string {
 	return "bash"
 }
 
-const bashFunction = `# ========== fastrun wrapper function for bash
+const bashFunction = `# ========== fastrun wrapper function for bash - LEGACY MODE
+# ========== THIS IS THE OLD IMPLEMENTATION AND IS NOT RECOMMENDED
 # ========== Add this to your ~/.bash_profile
 f() {
     # Run the f command and capture the output
@@ -107,7 +108,8 @@ f() {
 }
 `
 
-const zshFunction = `# ========== fastrun wrapper function for zsh
+const zshFunction = `# ========== fastrun wrapper function for zsh - LEGACY MODE
+# ========== THIS IS THE OLD IMPLEMENTATION AND IS NOT RECOMMENDED
 # ========== Add this to your ~/.zshrc
 f() {
     # Run the f command and capture the output
@@ -126,5 +128,28 @@ f() {
     echo "$cmd_output" | grep -v "FASTRUN_CMD:"
     
     return $exit_code
+}
+`
+
+// テキストモードを使用した新しいシェル関数
+const bashFunctionWithT = `
+# ========== Add this to your ~/.bash_profile ==========
+f() {
+    local cmd=$(command f -t "$@")
+    if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        history -s "$cmd"
+        eval "$cmd"
+    fi
+}
+`
+
+const zshFunctionWithT = `
+# ========== Add this to your ~/.zshrc ==========
+f() {
+    local cmd=$(command f -t "$@")
+    if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        print -s "$cmd"
+        eval "$cmd"
+    fi
 }
 `

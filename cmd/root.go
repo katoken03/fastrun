@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var textOnly bool
+
 var rootCmd = &cobra.Command{
 	Use:   "fastrun",
 	Short: "fastrun is a command launcher",
@@ -22,6 +24,11 @@ without remembering the exact command names.`,
 
 func Execute() error {
 	return rootCmd.Execute()
+}
+
+func init() {
+	// テキストモードのフラグを追加
+	rootCmd.Flags().BoolVarP(&textOnly, "text-only", "t", false, "Print selected command text only without execution")
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
@@ -61,6 +68,24 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	selectedCmd, err := ui.Show()
 	if err != nil {
 		return fmt.Errorf("UI error: %w", err)
+	}
+
+	// テキストのみモードの場合は、コマンドのテキストを出力して終了
+	if textOnly {
+		// 実行コマンドだけをテキストとして出力
+		for _, r := range runners {
+			cmds, err := r.ParseCommands(cwd)
+			if err != nil {
+				continue
+			}
+			for _, cmd := range cmds {
+				if cmd.Name == selectedCmd.Name {
+					fmt.Println(cmd.ExecuteCommand)
+					return nil
+				}
+			}
+		}
+		return fmt.Errorf("command not found: %s", selectedCmd.Name)
 	}
 
 	// Find the appropriate runner
