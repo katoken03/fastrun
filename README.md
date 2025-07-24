@@ -1,3 +1,13 @@
+<div align="center">
+	<br>
+	<br>
+	<br>
+	<img alt="ntl" width="300" src="./f-logo.svg">
+	<br>
+	<br>
+	<br>
+</div>
+
 # fastrun
 
 Instead of typing...
@@ -6,8 +16,16 @@ npm run dev
 ```
 Isn't it much faster to just type:
 ```bash
-f [Enter] [Enter]
+f [Enter]
 ```
+
+<div align="center">
+	<br>
+	<img alt="overview" width="400" src="./f-overview.gif">
+	<br>
+</div>
+
+
 This command launcher tool makes it possible!
 
 Even with multiple commands in your project, you can use incremental search to filter them or select with arrow keys - no need to remember the exact command names.
@@ -71,6 +89,47 @@ Example configuration:
   "defaultTool": "npm"
 }
 ```
+
+## Shell History Integration
+
+To add selected commands to your shell history, add the following function to your shell configuration file:
+
+### For Bash (`.bash_profile` or `.bashrc`):
+
+```bash
+f() {
+  if [[ "$1" == -* ]]; then
+    command /opt/homebrew/bin/f "$@"
+    return
+  fi
+  local cmd=$(command /opt/homebrew/bin/f -t "$@")
+  if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+    history -s "$cmd"
+    eval "$cmd"
+  fi
+}
+```
+
+### For Zsh (`.zshrc`):
+
+```zsh
+f() {
+  if [[ "$1" == -* ]]; then
+    command /opt/homebrew/bin/f "$@"
+    return
+  fi
+  local cmd=$(command /opt/homebrew/bin/f -t "$@")
+  if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+    print -s "$cmd"
+    eval "$cmd"
+  fi
+}
+```
+
+Both functions will:
+- Execute the selected command
+- Add it to your shell history so you can access it with the up arrow key
+- Handle flags normally by passing them directly to the fastrun binary
 
 ## Contributing
 
