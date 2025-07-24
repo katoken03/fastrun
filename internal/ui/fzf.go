@@ -5,6 +5,7 @@ import (
     "os"
     "os/exec"
     "strings"
+    "syscall"
 
     "github.com/kato/fastrun/internal/config"
     "github.com/kato/fastrun/internal/runner"
@@ -87,6 +88,15 @@ func (u *UI) Show() (*runner.Command, error) {
 
     output, err := cmd.Output()
     if err != nil {
+        // Check if the error is due to exit status 130 (ESC key or Ctrl+C)
+        if exitError, ok := err.(*exec.ExitError); ok {
+            if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
+                if status.ExitStatus() == 130 {
+                    // User cancelled with ESC or Ctrl+C - this is not an error
+                    return nil, NewCancelledError("selection cancelled by user")
+                }
+            }
+        }
         return nil, fmt.Errorf("fzf execution failed: %w", err)
     }
 

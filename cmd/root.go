@@ -6,7 +6,7 @@ import (
 
 	"github.com/kato/fastrun/internal/config"
 	"github.com/kato/fastrun/internal/runner"
-	"github.com/kato/fastrun/internal/ui"
+	uiPkg "github.com/kato/fastrun/internal/ui"
 	"github.com/kato/fastrun/plugins/make"
 	"github.com/kato/fastrun/plugins/npm"
 	"github.com/spf13/cobra"
@@ -64,9 +64,14 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	// Show UI and get selected command
-	ui := ui.NewUI(commands, cfg)
+	ui := uiPkg.NewUI(commands, cfg)
 	selectedCmd, err := ui.Show()
 	if err != nil {
+		// Check if the error is a user cancellation (ESC key or Ctrl+C)
+		if uiPkg.IsCancelled(err) {
+			// User cancelled - exit silently without error message
+			return nil
+		}
 		return fmt.Errorf("UI error: %w", err)
 	}
 
