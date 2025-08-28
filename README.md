@@ -39,16 +39,17 @@ Even with multiple commands in your project, you can use incremental search to f
 
 ## Installation
 
-### Prerequisites
-
-- [Homebrew](https://brew.sh/) (for macOS users)
-- OpenJDK 17 or later
 
 ### Quick Install
 
 ```bash
 brew install katoken03/fastrun/fastrun
 ```
+
+### Prerequisites
+
+- [Homebrew](https://brew.sh/) (for macOS users)
+
 
 ### Manual Installation
 
@@ -98,15 +99,13 @@ To add selected commands to your shell history, add the following function to yo
 
 ```bash
 f() {
-  if [[ "$1" == -* ]]; then
-    command /opt/homebrew/bin/f "$@"
-    return
-  fi
-  local cmd=$(command /opt/homebrew/bin/f -t "$@")
-  if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-    history -s "$cmd"
-    eval "$cmd"
-  fi
+    local cmd=$(command f -t "$@")
+    if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        # Display command in cyan color (DisplayCommand equivalent)
+        echo -e "\033[36m$cmd\033[0m"
+        history -s "$cmd"
+        eval "$cmd"
+    fi
 }
 ```
 
@@ -114,15 +113,13 @@ f() {
 
 ```zsh
 f() {
-  if [[ "$1" == -* ]]; then
-    command /opt/homebrew/bin/f "$@"
-    return
-  fi
-  local cmd=$(command /opt/homebrew/bin/f -t "$@")
-  if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-    print -s "$cmd"
-    eval "$cmd"
-  fi
+    local cmd=$(command f -t "$@")
+    if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        # Display command in cyan color (DisplayCommand equivalent)
+        echo -e "\033[36m$cmd\033[0m"
+        print -s "$cmd"
+        eval "$cmd"
+    fi
 }
 ```
 
