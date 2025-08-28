@@ -9,14 +9,14 @@
 - ユーザーは選択したコマンドを再度利用する際に、手動で入力する必要があった
 
 #### 解決策
-1. **特殊なマーカーの追加**
-   - コマンド表示時に特殊なマーカー（`FASTRUN_CMD:`）を追加
-   - これにより、シェル関数でコマンドを簡単に識別できるようになった
+1. **`-t`オプション（--text-only）の追加**
+   - コマンドの実行結果をテキスト形式で返すオプション
+   - UI表示をスキップして、選択されたコマンドの文字列のみを出力
 
 2. **シェル関数の実装**
    - `f` コマンドをラップするシェル関数を作成
-   - 特殊なマーカーを使用してコマンドを抽出し、ヒストリーに追加
-   - マーカー行を除いて出力を表示
+   - `-t`オプションを使用してコマンド文字列を取得し、ヒストリーに追加
+   - `eval`でコマンドを直接実行
 
 3. **シェル関数生成コマンドの追加**
    - `generate-shell-function` コマンドを実装
@@ -24,50 +24,22 @@
 
 ### 技術的な詳細
 
-#### 特殊なマーカーの実装
-```go
-// DisplayCommand prints the command in the specified color if enabled
-func DisplayCommand(cmd string, color string) {
-    if code, ok := colorCodes[color]; ok {
-        // 特殊なマーカーを追加してコマンドを表示
-        fmt.Printf("FASTRUN_CMD:%s\n", cmd)
-        fmt.Printf("\033[%sm%s\033[0m\n", code, cmd)
-    } else {
-        fmt.Printf("FASTRUN_CMD:%s\n", cmd)
-        fmt.Println(cmd)
-    }
-}
-```
-
 #### シェル関数の実装（Bash用）
 ```bash
-# ========== fastrun wrapper function for bash
-# ========== Add this to your ~/.bash_profile
+# ========== Add this to your ~/.bash_profile ==========
 f() {
-    # Run the f command and capture the output
-    local cmd_output=$(command f "$@")
-    local exit_code=$?
-    
-    # 特殊なマーカー（FASTRUN_CMD:）を使用してコマンドを抽出
-    local cmd=$(echo "$cmd_output" | grep "FASTRUN_CMD:" | sed 's/FASTRUN_CMD://')
-    
-    # Add command to history if not empty
-    if [ -n "$cmd" ]; then
+    local cmd=$(command f -t "$@")
+    if [ $? -eq 0 ] && [ -n "$cmd" ]; then
         history -s "$cmd"
+        eval "$cmd"
     fi
-    
-    # 特殊なマーカー行を除いて出力を表示
-    echo "$cmd_output" | grep -v "FASTRUN_CMD:"
-    
-    return $exit_code
 }
 ```
 
 ### 学んだ教訓
 
-1. **出力の解析に関する問題**
-   - 当初、ANSIカラーコードを使用してコマンドを識別しようとしたが、正規表現が複雑になり信頼性が低かった
-   - 特殊なマーカーを追加することで、より確実にコマンドを識別できるようになった
+1. **シンプルな実装の重要性**
+   - 当初、出力解析とマーカー方式を使用していたが、`-t`オプションによる直接的なアプローチの方がシンプルで信頼性が高い
 
 2. **シェル関数の再帰呼び出し防止**
    - シェル関数と同名のコマンドを呼び出す際は、`command` プレフィックスを使用して再帰呼び出しを防止する必要がある

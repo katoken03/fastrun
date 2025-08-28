@@ -85,51 +85,6 @@ func detectShell() string {
 	return "bash"
 }
 
-const bashFunction = `# ========== fastrun wrapper function for bash - LEGACY MODE
-# ========== THIS IS THE OLD IMPLEMENTATION AND IS NOT RECOMMENDED
-# ========== Add this to your ~/.bash_profile
-f() {
-    # Run the f command and capture the output
-    local cmd_output=$(command f "$@")
-    local exit_code=$?
-    
-    # 特殊なマーカー（FASTRUN_CMD:）を使用してコマンドを抽出
-    local cmd=$(echo "$cmd_output" | grep "FASTRUN_CMD:" | sed 's/FASTRUN_CMD://')
-    
-    # Add command to history if not empty
-    if [ -n "$cmd" ]; then
-        history -s "$cmd"
-    fi
-    
-    # 特殊なマーカー行を除いて出力を表示
-    echo "$cmd_output" | grep -v "FASTRUN_CMD:"
-    
-    return $exit_code
-}
-`
-
-const zshFunction = `# ========== fastrun wrapper function for zsh - LEGACY MODE
-# ========== THIS IS THE OLD IMPLEMENTATION AND IS NOT RECOMMENDED
-# ========== Add this to your ~/.zshrc
-f() {
-    # Run the f command and capture the output
-    local cmd_output=$(command f "$@")
-    local exit_code=$?
-    
-    # 特殊なマーカー（FASTRUN_CMD:）を使用してコマンドを抽出
-    local cmd=$(echo "$cmd_output" | grep "FASTRUN_CMD:" | sed 's/FASTRUN_CMD://')
-    
-    # Add command to history if not empty
-    if [ -n "$cmd" ]; then
-        print -s "$cmd"
-    fi
-    
-    # 特殊なマーカー行を除いて出力を表示
-    echo "$cmd_output" | grep -v "FASTRUN_CMD:"
-    
-    return $exit_code
-}
-`
 
 // テキストモードを使用した新しいシェル関数
 const bashFunctionWithT = `
@@ -137,6 +92,8 @@ const bashFunctionWithT = `
 f() {
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        # Display command in cyan color (DisplayCommand equivalent)
+        echo -e "\033[36m$cmd\033[0m"
         history -s "$cmd"
         eval "$cmd"
     fi
@@ -148,6 +105,8 @@ const zshFunctionWithT = `
 f() {
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
+        # Display command in cyan color (DisplayCommand equivalent)
+        echo -e "\033[36m$cmd\033[0m"
         print -s "$cmd"
         eval "$cmd"
     fi

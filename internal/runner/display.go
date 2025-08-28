@@ -17,11 +17,8 @@ var colorCodes = map[string]string{
 // DisplayCommand prints the command in the specified color if enabled
 func DisplayCommand(cmd string, color string) {
     if code, ok := colorCodes[color]; ok {
-        // 特殊なマーカーを追加してコマンドを表示
-        fmt.Printf("FASTRUN_CMD:%s\n", cmd)
         fmt.Printf("\033[%sm%s\033[0m\n", code, cmd)
     } else {
-        fmt.Printf("FASTRUN_CMD:%s\n", cmd)
         fmt.Println(cmd)
     }
 }
