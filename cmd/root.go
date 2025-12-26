@@ -12,7 +12,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var textOnly bool
+var (
+	textOnly bool
+	version  string
+	commit   string
+	date     string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "fastrun",
@@ -20,10 +25,18 @@ var rootCmd = &cobra.Command{
 	Long: `fastrun is a command launcher that helps you run npm scripts and make targets
 without remembering the exact command names.`,
 	RunE: runCommand,
+	Version: version,
 }
 
 func Execute() error {
 	return rootCmd.Execute()
+}
+
+func SetVersionInfo(v, c, d string) {
+	version = v
+	commit = c
+	date = d
+	rootCmd.Version = fmt.Sprintf("fastrun version %s\ncommit: %s\nbuilt: %s", version, commit, date)
 }
 
 func init() {
