@@ -1,0 +1,39 @@
+version: 2
+
+builds:
+  - binary: f
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+
+brews:
+  - repository:
+      owner: katoken03
+      name: homebrew-fastrun
+    commit_author:
+      name: katoken03
+      email: katoakimitsu@gmail.com
+    homepage: "https://github.com/katoken03/fastrun"
+    description: "Command launcher tool for developers"
+    license: "MIT"
+    test: |
+      system "#{bin}/f --version"
+    install: |
+      system "go", "build", *std_go_args(output: bin/"f")
