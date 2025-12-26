@@ -33,7 +33,8 @@ brews:
     homepage: "https://github.com/katoken03/fastrun"
     description: "Command launcher tool for developers"
     license: "MIT"
-    path: Formula/fastrun.rb
+    directory: Formula
+    formula: fastrun
     test: |
       assert_match "fastrun version", shell_output("#{bin}/f --version")
     install: |
