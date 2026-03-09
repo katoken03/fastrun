@@ -68,6 +68,10 @@ To have selected commands saved to your shell history (accessible with the ↑ k
 
 ```bash
 f() {
+    if [[ "$1" == --* ]]; then
+        command f "$@"
+        return
+    fi
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
         echo -e "\033[36m$cmd\033[0m"
@@ -81,6 +85,10 @@ f() {
 
 ```zsh
 f() {
+    if [[ "$1" == --* ]]; then
+        command f "$@"
+        return
+    fi
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
         echo -e "\033[36m$cmd\033[0m"
