@@ -36,7 +36,7 @@ func SetVersionInfo(v, c, d string) {
 	version = v
 	commit = c
 	date = d
-	rootCmd.Version = fmt.Sprintf("fastrun version %s\ncommit: %s\nbuilt: %s", version, commit, date)
+	rootCmd.Version = fmt.Sprintf("%s (commit: %s, built: %s)", version, commit, date)
 }
 
 func init() {
