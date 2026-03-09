@@ -19,14 +19,48 @@ var ignoredTargets = map[string]bool{
 	"@echo":  true,
 }
 
+// extractComment はコメント行からコメントテキストを返す。コメント行でなければ false を返す。
+func extractComment(line string) (string, bool) {
+	if !strings.HasPrefix(line, "#") {
+		return "", false
+	}
+	return strings.TrimSpace(strings.TrimPrefix(line, "#")), true
+}
+
+// isVariableAssignment は Makefile の変数代入行かどうかを判定する。
+// VAR = value / VAR := value / VAR ?= value 等をすべて対象とする。
+func isVariableAssignment(line string) bool {
+	idx := strings.Index(line, ":")
+	if idx == -1 {
+		return false
+	}
+	// = が : より前にある場合は変数代入（VAR = value, VAR ?= value 等）
+	if eqIdx := strings.Index(line, "="); eqIdx != -1 && eqIdx < idx {
+		return true
+	}
+	// := は変数代入
+	return idx+1 < len(line) && line[idx+1] == '='
+}
+
+// extractTargetName はターゲット行からターゲット名を返す。ターゲット行でなければ false を返す。
+func extractTargetName(line string) (string, bool) {
+	if isVariableAssignment(line) {
+		return "", false
+	}
+	idx := strings.Index(line, ":")
+	if idx == -1 {
+		return "", false
+	}
+	return strings.TrimSpace(line[:idx]), true
+}
+
+// shouldIgnoreTarget は表示対象外のターゲットかどうかを判定する。
 func shouldIgnoreTarget(target string) bool {
 	if ignoredTargets[target] {
 		return true
 	}
 	return strings.HasPrefix(target, ".") ||
-		strings.HasPrefix(target, "@") ||
-		strings.HasPrefix(target, "VERSION") ||
-		strings.HasPrefix(target, "BUILD_TIME")
+		strings.HasPrefix(target, "@")
 }
 
 func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
@@ -38,35 +72,27 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 	defer file.Close()
 
 	var commands []runner.Command
-	seenTargets := make(map[string]bool) // 重複チェック用
-
+	seenTargets := make(map[string]bool)
 	scanner := bufio.NewScanner(file)
 	var currentComment string
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
-		// コメント行の処理
-		if strings.HasPrefix(line, "#") {
-			currentComment = strings.TrimSpace(strings.TrimPrefix(line, "#"))
+		if comment, ok := extractComment(line); ok {
+			currentComment = comment
 			continue
 		}
 
-		// ターゲット行の処理
-		if idx := strings.Index(line, ":"); idx != -1 {
-			target := strings.TrimSpace(line[:idx])
-			// 重複と無視すべきターゲットをスキップ
-			if !shouldIgnoreTarget(target) && !seenTargets[target] {
-				seenTargets[target] = true
-				cmd := runner.Command{
-					Name:           target,
-					Description:    currentComment,
-					ExecuteCommand: fmt.Sprintf("make %s", target),
-				}
-				commands = append(commands, cmd)
-			}
-			currentComment = ""
+		if target, ok := extractTargetName(line); ok && !shouldIgnoreTarget(target) && !seenTargets[target] {
+			seenTargets[target] = true
+			commands = append(commands, runner.Command{
+				Name:           target,
+				Description:    currentComment,
+				ExecuteCommand: fmt.Sprintf("make %s", target),
+			})
 		}
+		currentComment = ""
 	}
 
 	if err := scanner.Err(); err != nil {
