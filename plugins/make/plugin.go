@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kato/fastrun/internal/runner"
+	"github.com/katoken03/fastrun/internal/runner"
 )
 
 type Runner struct{}

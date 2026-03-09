@@ -1,4 +1,4 @@
-module github.com/kato/fastrun
+module github.com/katoken03/fastrun
 
 go 1.21
 

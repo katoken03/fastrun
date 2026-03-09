@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kato/fastrun/cmd"
+	"github.com/katoken03/fastrun/cmd"
 )
 
 var (

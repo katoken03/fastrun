@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/kato/fastrun/internal/runner"
+	"github.com/katoken03/fastrun/internal/runner"
 	"github.com/tidwall/gjson"
 )
 

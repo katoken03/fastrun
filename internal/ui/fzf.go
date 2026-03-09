@@ -7,8 +7,8 @@ import (
     "strings"
     "syscall"
 
-    "github.com/kato/fastrun/internal/config"
-    "github.com/kato/fastrun/internal/runner"
+    "github.com/katoken03/fastrun/internal/config"
+    "github.com/katoken03/fastrun/internal/runner"
 )
 
 type UI struct {
