@@ -27,6 +27,7 @@ brews:
   - repository:
       owner: katoken03
       name: homebrew-fastrun
+      token: "{{ .Env.HOMEBREW_GITHUB_API_TOKEN }}"
     commit_author:
       name: katoken03
       email: katoakimitsu@gmail.com
