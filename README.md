@@ -2,19 +2,29 @@
 	<br>
 	<br>
 	<br>
-	<img alt="ntl" width="300" src="./f-logo.svg">
+	<img alt="fastrun" width="300" src="./f-logo.svg">
 	<br>
 	<br>
+	<h3>The fastest way to run NPM scripts and Makefile targets</h3>
 	<br>
 </div>
 
-# FastRun
+## Install
+
+```bash
+brew install katoken03/fastrun/fastrun
+```
+
+## What is FastRun?
 
 Instead of typing...
+
 ```bash
 npm run dev
 ```
-Isn't it much faster to just type:
+
+Just type:
+
 ```bash
 f [Enter]
 ```
@@ -23,85 +33,43 @@ f [Enter]
 	<br>
 	<img alt="overview" width="400" src="./f-overview.gif">
 	<br>
+	<br>
 </div>
 
-
-This command launcher tool makes it possible!
-
-Even with multiple commands in your project, you can use incremental search to filter them or select with arrow keys - no need to remember the exact command names.
+FastRun instantly shows all available commands in your project — npm scripts and Makefile targets — and lets you select one with fuzzy search or arrow keys. No need to remember command names.
 
 ## Features
 
-- Quick command selection with fuzzy search using fzf
-- Support for npm scripts and make targets
-- Project-specific and global configurations
-- Extensible plugin system
+- **Instant fuzzy search** — powered by [fzf](https://github.com/junegunn/fzf)
+- **npm & Makefile support** — automatically detects scripts in your project
+- **Smart package manager detection** — works with npm, pnpm, bun, and [ni](https://github.com/antfu/ni)
+- **Shell history integration** — selected commands are added to your shell history
 
-## Installation
+## Requirements
 
-
-### Quick Install
-
-```bash
-brew install katoken03/fastrun/fastrun
-```
-
-### Prerequisites
-
-- [Homebrew](https://brew.sh/) (for macOS users)
-
-
-### Manual Installation
-
-If you prefer to install from source:
-
-1. Clone the repository
-2. Build using Go 1.x
-3. Install dependencies
+- [Homebrew](https://brew.sh/)
+- [fzf](https://github.com/junegunn/fzf) — `brew install fzf`
 
 ## Usage
 
-Basic command syntax:
+Run `f` in any project directory:
 
 ```bash
-f           # List and select available commands
-f <pattern> # Filter commands by pattern
+f
 ```
 
-Examples:
-
-```bash
-f              # Shows all available commands
-f test         # Shows commands containing "test"
-f "run dev"    # Shows commands containing "run dev"
-```
-
-## Configuration
-
-fastrun can be configured at two levels:
-
-1. Global configuration: `~/.config/f/config.json`
-2. Project configuration: `.f/config.json`
-
-Example configuration:
-```json
-{
-  "plugins": ["npm", "make"],
-  "defaultTool": "npm"
-}
-```
+FastRun will list all available commands. Use fuzzy search to filter, arrow keys to navigate, and Enter to execute.
 
 ## Shell History Integration
 
-To add selected commands to your shell history, add the following function to your shell configuration file:
+To have selected commands saved to your shell history (accessible with the ↑ key), add the following snippet to your shell config.
 
-### For Bash (`.bash_profile` or `.bashrc`):
+### Bash (`.bash_profile` or `.bashrc`)
 
 ```bash
 f() {
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-        # Display command in cyan color (DisplayCommand equivalent)
         echo -e "\033[36m$cmd\033[0m"
         history -s "$cmd"
         eval "$cmd"
@@ -109,13 +77,12 @@ f() {
 }
 ```
 
-### For Zsh (`.zshrc`):
+### Zsh (`.zshrc`)
 
 ```zsh
 f() {
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-        # Display command in cyan color (DisplayCommand equivalent)
         echo -e "\033[36m$cmd\033[0m"
         print -s "$cmd"
         eval "$cmd"
@@ -123,17 +90,10 @@ f() {
 }
 ```
 
-Both functions will:
-- Execute the selected command
-- Add it to your shell history so you can access it with the up arrow key
-- Handle flags normally by passing them directly to the fastrun binary
-
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## License
 
-[MIT License](LICENSE)
-
-This tool is designed to improve developer productivity by eliminating the need to type long commands repeatedly, allowing you to focus more on development.
+[MIT](LICENSE)
