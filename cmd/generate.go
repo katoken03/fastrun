@@ -90,9 +90,12 @@ func detectShell() string {
 const bashFunctionWithT = `
 # ========== Add this to your ~/.bash_profile ==========
 f() {
+    if [[ "$1" == --* ]]; then
+        command f "$@"
+        return
+    fi
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-        # Display command in cyan color (DisplayCommand equivalent)
         echo -e "\033[36m$cmd\033[0m"
         history -s "$cmd"
         eval "$cmd"
@@ -103,9 +106,12 @@ f() {
 const zshFunctionWithT = `
 # ========== Add this to your ~/.zshrc ==========
 f() {
+    if [[ "$1" == --* ]]; then
+        command f "$@"
+        return
+    fi
     local cmd=$(command f -t "$@")
     if [ $? -eq 0 ] && [ -n "$cmd" ]; then
-        # Display command in cyan color (DisplayCommand equivalent)
         echo -e "\033[36m$cmd\033[0m"
         print -s "$cmd"
         eval "$cmd"
