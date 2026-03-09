@@ -37,4 +37,4 @@ brews:
     test: |
       assert_match "fastrun version", shell_output("#{bin}/f --version")
     install: |
-      system "go", "build", *std_go_args(output: bin/"f")
+      bin.install "f"
