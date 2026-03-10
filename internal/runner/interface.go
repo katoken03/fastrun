@@ -3,6 +3,7 @@ package runner
 // Command represents a runnable command with its metadata
 type Command struct {
     Name           string
+    Source         string // "npm" | "make"
     Description    string
     ExecuteCommand string
 }

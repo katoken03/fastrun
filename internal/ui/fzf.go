@@ -42,12 +42,23 @@ func (u *UI) colorize(text, color string) string {
     return text
 }
 
+func (u *UI) dimColorize(text, color string) string {
+    if code, ok := colorCodes[color]; ok {
+        return fmt.Sprintf("\033[2;%sm%s\033[0m", code, text)
+    }
+    return fmt.Sprintf("\033[2m%s\033[0m", text)
+}
+
 func (u *UI) Show() (*runner.Command, error) {
-    // Find the longest command name for proper alignment
-    maxLen := 0
+    // Find the longest command name and source for proper alignment
+    maxNameLen := 0
+    maxSourceLen := 0
     for _, cmd := range u.commands {
-        if len(cmd.Name) > maxLen {
-            maxLen = len(cmd.Name)
+        if len(cmd.Name) > maxNameLen {
+            maxNameLen = len(cmd.Name)
+        }
+        if len(cmd.Source) > maxSourceLen {
+            maxSourceLen = len(cmd.Source)
         }
     }
 
@@ -56,17 +67,16 @@ func (u *UI) Show() (*runner.Command, error) {
     for _, cmd := range u.commands {
         // 色付きのコマンド名を作成
         coloredName := u.colorize(cmd.Name, u.config.CommandColor)
-        
-        // パディングを計算（色制御文字を除いた実際の表示幅に基づく）
-        padding := strings.Repeat(" ", maxLen - len(cmd.Name))
-        
-        // 説明文が空でない場合のみパディングを追加
-        description := cmd.Description
-        if description != "" {
-            description = "    " + description
-        }
+        namePadding := strings.Repeat(" ", maxNameLen-len(cmd.Name))
 
-        fmt.Fprintf(&input, "%s%s%s\n", coloredName, padding, description)
+        // ソース種別（薄いグレー）
+        coloredSource := u.dimColorize(cmd.Source, "white")
+        sourcePadding := strings.Repeat(" ", maxSourceLen-len(cmd.Source))
+
+        // 説明文
+        description := cmd.Description
+
+        fmt.Fprintf(&input, "%s%s  %s%s  %s\n", coloredName, namePadding, coloredSource, sourcePadding, description)
     }
 
     // fzfのオプションを設定

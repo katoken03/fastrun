@@ -88,6 +88,7 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 			seenTargets[target] = true
 			commands = append(commands, runner.Command{
 				Name:           target,
+				Source:         "make",
 				Description:    currentComment,
 				ExecuteCommand: fmt.Sprintf("make %s", target),
 			})

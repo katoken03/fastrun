@@ -63,6 +63,7 @@ func (r *Runner) ParseCommands(path string) ([]runner.Command, error) {
 
 		cmd := runner.Command{
 			Name:           key.String(),
+			Source:         "npm",
 			Description:    value.String(),
 			ExecuteCommand: executeCmd,
 		}
