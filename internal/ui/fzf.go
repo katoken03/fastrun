@@ -49,8 +49,8 @@ func (u *UI) dimColorize(text, color string) string {
     return fmt.Sprintf("\033[2m%s\033[0m", text)
 }
 
-func (u *UI) Show() (*runner.Command, error) {
-    // Find the longest command name and source for proper alignment
+// buildFzfInput はコマンド一覧を fzf への入力文字列に整形する
+func (u *UI) buildFzfInput() string {
     maxNameLen := 0
     maxSourceLen := 0
     for _, cmd := range u.commands {
@@ -62,66 +62,70 @@ func (u *UI) Show() (*runner.Command, error) {
         }
     }
 
-    // コマンド一覧を文字列に変換
     var input strings.Builder
     for _, cmd := range u.commands {
-        // 色付きのコマンド名を作成
         coloredName := u.colorize(cmd.Name, u.config.CommandColor)
         namePadding := strings.Repeat(" ", maxNameLen-len(cmd.Name))
 
-        // ソース種別（薄いグレー）
         coloredSource := u.dimColorize(cmd.Source, "white")
         sourcePadding := strings.Repeat(" ", maxSourceLen-len(cmd.Source))
 
-        // 説明文
-        description := cmd.Description
-
-        fmt.Fprintf(&input, "%s%s  %s%s  %s\n", coloredName, namePadding, coloredSource, sourcePadding, description)
+        fmt.Fprintf(&input, "%s%s  %s%s  %s\n", coloredName, namePadding, coloredSource, sourcePadding, cmd.Description)
     }
+    return input.String()
+}
 
-    // fzfのオプションを設定
+// runFzf は fzf を起動してユーザーが選択した行を返す
+func (u *UI) runFzf(input string) (string, error) {
     fzfArgs := []string{
-        "--ansi",            // ANSIカラーコードを解釈
-        "--no-multi",        // 単一選択
-        "--delimiter= ",     // スペースをデリミタとして使用
-        "--nth=1",          // 最初のフィールドでマッチング
+        "--ansi",
+        "--no-multi",
+        "--delimiter= ",
+        "--nth=1",
     }
-
-    // 位置の設定を追加
     if u.config.FzfPosition == "top" {
         fzfArgs = append(fzfArgs, "--reverse")
     }
 
     cmd := exec.Command("fzf", fzfArgs...)
     cmd.Stderr = os.Stderr
-    cmd.Stdin = strings.NewReader(input.String())
+    cmd.Stdin = strings.NewReader(input)
 
     output, err := cmd.Output()
     if err != nil {
-        // Check if the error is due to exit status 130 (ESC key or Ctrl+C)
         if exitError, ok := err.(*exec.ExitError); ok {
             if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
                 if status.ExitStatus() == 130 {
-                    // User cancelled with ESC or Ctrl+C - this is not an error
-                    return nil, NewCancelledError("selection cancelled by user")
+                    return "", NewCancelledError("selection cancelled by user")
                 }
             }
         }
-        return nil, fmt.Errorf("fzf execution failed: %w", err)
+        return "", fmt.Errorf("fzf execution failed: %w", err)
     }
+    return strings.TrimSpace(string(output)), nil
+}
 
-    // 選択された行からコマンドを特定（色制御文字を除去）
-    selected := strings.TrimSpace(string(output))
+// findCommandByName は選択された行からコマンド名を取り出し、対応する Command を返す
+func (u *UI) findCommandByName(selected string) (*runner.Command, error) {
     selectedName := strings.Split(selected, " ")[0]
-    selectedName = strings.TrimPrefix(selectedName, "\033[36m") // シアンの制御文字を除去
-    selectedName = strings.TrimSuffix(selectedName, "\033[0m")  // リセット制御文字を除去
+    selectedName = strings.TrimPrefix(selectedName, "\033[36m")
+    selectedName = strings.TrimSuffix(selectedName, "\033[0m")
 
-    // 対応するコマンドを探す
     for _, cmd := range u.commands {
         if cmd.Name == selectedName {
             return &cmd, nil
         }
     }
-
     return nil, fmt.Errorf("command not found: %s", selectedName)
+}
+
+func (u *UI) Show() (*runner.Command, error) {
+    input := u.buildFzfInput()
+
+    selected, err := u.runFzf(input)
+    if err != nil {
+        return nil, err
+    }
+
+    return u.findCommandByName(selected)
 }
