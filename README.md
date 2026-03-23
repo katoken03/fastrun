@@ -50,6 +50,47 @@ FastRun instantly shows all available commands in your project — npm scripts a
 - [Homebrew](https://brew.sh/)
 - [fzf](https://github.com/junegunn/fzf) — `brew install fzf`
 
+## Configuration
+
+FastRun reads optional **JSON** config (UTF-8). Use a single root object and set only the keys you need.
+
+**Where it is loaded from (later wins):**
+
+| Order | Path | Role |
+| --- | --- | --- |
+| 1 | `~/.config/fastrun/config.json` | User-wide defaults |
+| 2 | `.fastrun/config.json` (under the directory you run `f` from) | Per-project overrides |
+
+If a file is missing, it is skipped. Keys that are **not** present in a file do not erase values already merged from an earlier file.
+
+**Parameters:**
+
+| Key | Type | Values / notes |
+| --- | --- | --- |
+| `fzf_position` | string | `"top"` (default) or `"bottom"`. FastRun passes `--reverse` to `fzf` when this is `"top"`. Other values are ignored. |
+| `command_color` | string | ANSI color name for the **command name** column in the list: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`. Other strings fall back to uncolored text. Default is `cyan`. |
+| `use_nr` | boolean | `true` — prefer the `nr` command when it is on `PATH` ([ni](https://github.com/antfu/ni)). `false` — never use `nr`; npm scripts use `npm` / `pnpm` / `bun` according to lockfiles. **Omit the key** to keep the classic behavior (try `nr` if on `PATH`). |
+
+**Tip:** Set `use_nr` to `false` if a version manager leaves an `nr` shim on `PATH` but the active Node install does not actually ship `nr`.
+
+**Example — `~/.config/fastrun/config.json`:**
+
+```json
+{
+  "fzf_position": "bottom",
+  "command_color": "green",
+  "use_nr": false
+}
+```
+
+**Example — project-only `.fastrun/config.json`:**
+
+```json
+{
+  "use_nr": false
+}
+```
+
 ## Usage
 
 Run `f` in any project directory:

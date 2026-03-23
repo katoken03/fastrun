@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Short: "fastrun is a command launcher",
 	Long: `fastrun is a command launcher that helps you run npm scripts and make targets
 without remembering the exact command names.`,
-	RunE: runCommand,
+	RunE:    runCommand,
 	Version: version,
 }
 
@@ -59,7 +59,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 
 	// Initialize runners
 	runners := []runner.CommandRunner{
-		&npm.Runner{},
+		&npm.Runner{UseNr: cfg.UseNr},
 		&make.Runner{},
 	}
 

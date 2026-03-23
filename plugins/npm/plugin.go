@@ -12,14 +12,19 @@ import (
 
 type Runner struct {
 	packageManager string
+	// UseNr is nil when unset (try nr if on PATH). If false, never use nr (e.g. nodenv shim without install).
+	UseNr *bool
 }
 
 // detectPackageManager detects the appropriate package manager based on lock files
 func (r *Runner) detectPackageManager(path string) string {
-	// Check if nr command is installed (highest priority)
-	// nr is part of the ni package and is used for running scripts
-	if _, err := exec.LookPath("nr"); err == nil {
-		return "nr"
+	skipNr := r.UseNr != nil && !*r.UseNr
+	if !skipNr {
+		// Check if nr command is installed (highest priority)
+		// nr is part of the ni package and is used for running scripts
+		if _, err := exec.LookPath("nr"); err == nil {
+			return "nr"
+		}
 	}
 
 	// Check for pnpm-lock.yaml
