@@ -88,7 +88,9 @@ If a file is missing, it is skipped. Keys that are **not** present in a file do 
 }
 ```
 
-## Usage
+## Usage 
+
+## npm / make
 
 Run `f` in any project directory:
 
@@ -98,7 +100,7 @@ f
 
 FastRun will list all available commands. Use fuzzy search to filter, arrow keys to navigate, and Enter to execute.
 
-### SSH
+### ssh
 
 From any directory:
 
