@@ -61,7 +61,7 @@ func runSSH(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	textOnly, err := cmd.Root().Flags().GetBool("text-only")
+	textOnly, err := cmd.Root().PersistentFlags().GetBool("text-only")
 	if err != nil {
 		return fmt.Errorf("text-only flag: %w", err)
 	}

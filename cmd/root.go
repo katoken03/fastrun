@@ -41,7 +41,7 @@ func SetVersionInfo(v, c, d string) {
 
 func init() {
 	// テキストモードのフラグを追加
-	rootCmd.Flags().BoolVarP(&textOnly, "text-only", "t", false, "Print selected command text only without execution")
+	rootCmd.PersistentFlags().BoolVarP(&textOnly, "text-only", "t", false, "Print selected command text only without execution")
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
