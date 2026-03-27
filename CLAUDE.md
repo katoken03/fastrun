@@ -25,6 +25,20 @@ git tag --sort=-v:refname | head -1
 
 ---
 
+## git worktree ルール
+
+Git Worktree は以下のディレクトリをベースディレクトリとする。
+
+
+```
+../fastrun.worktrees/
+```
+
+こちらのディレクトリがまだ存在しない場合は作成する。
+
+
+---
+
 ## 設定ファイル
 
 - **読み込み順**: `~/.config/fastrun/config.json` → カレントの `.fastrun/config.json`（後者が上書き）。ファイルが無ければスキップ。

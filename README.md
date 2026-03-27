@@ -44,6 +44,7 @@ FastRun instantly shows all available commands in your project — npm scripts a
 - **npm & Makefile support** — automatically detects scripts in your project
 - **Smart package manager detection** — works with npm, pnpm, bun, and [ni](https://github.com/antfu/ni)
 - **Shell history integration** — selected commands are added to your shell history
+- **SSH host picker** — `f ssh` lists `Host` aliases from `~/.ssh/config` (or `SSH_CONFIG`) in fzf with a config stanza preview, then connects
 
 ## Requirements
 
@@ -100,6 +101,16 @@ f
 ```
 
 FastRun will list all available commands. Use fuzzy search to filter, arrow keys to navigate, and Enter to execute.
+
+### SSH
+
+From any directory:
+
+```bash
+f ssh
+```
+
+Uses the same `fzf_position` as the main launcher. Only literal `Host` patterns are listed (entries that are only wildcards, e.g. `Host *`, are skipped). `Include` is not expanded. Without the shell wrapper, `fastrun ssh` runs `ssh` directly after you choose a host.
 
 ## Shell History Integration
 
