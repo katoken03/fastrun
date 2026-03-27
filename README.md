@@ -46,10 +46,6 @@ FastRun instantly shows all available commands in your project — npm scripts a
 - **Shell history integration** — selected commands are added to your shell history
 - **SSH host picker** — `f ssh` lists `Host` aliases from `~/.ssh/config` (or `SSH_CONFIG`) in fzf with a config stanza preview, then connects
 
-## Requirements
-
-- [Homebrew](https://brew.sh/)
-- [fzf](https://github.com/junegunn/fzf) — `brew install fzf`
 
 ## Configuration
 
