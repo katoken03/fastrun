@@ -15,8 +15,9 @@ import (
 )
 
 var sshCmd = &cobra.Command{
-	Use:   "ssh",
-	Short: "Select a Host from SSH config and connect",
+	Use:     "ssh",
+	Aliases: []string{"s"},
+	Short:   "Select a Host from SSH config and connect",
 	Long:  `Lists Host entries from your SSH config (see ssh_config(5)), lets you pick one with fzf, then runs ssh.`,
 	RunE:  runSSH,
 }
