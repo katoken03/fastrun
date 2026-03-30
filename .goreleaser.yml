@@ -35,6 +35,8 @@ brews:
     description: "Command launcher tool for developers"
     license: "MIT"
     directory: Formula
+    dependencies:
+      - name: fzf
     test: |
       assert_match "fastrun version", shell_output("#{bin}/f --version")
     install: |

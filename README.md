@@ -15,6 +15,8 @@
 brew install katoken03/fastrun/fastrun
 ```
 
+Homebrew installs [`fzf`](https://github.com/junegunn/fzf) as a dependency of this formula when needed.
+
 ## What is FastRun?
 
 Instead of typing...
